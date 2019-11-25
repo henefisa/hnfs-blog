@@ -1,0 +1,23 @@
+.landing--image{
+    background: url('../images/landing.jpg');
+    height: 100vh;
+    background-size: cover;
+    color: #fff;
+    font-family: serif;
+}
+
+.landing--text{
+    padding-top: 20%;
+    width: 800px;
+    margin: 0 auto;
+}
+.group--link-btn{
+    width:100%;
+}
+.group--link-btn a{
+    color: #fff;
+    font-size: 30px;
+    padding: 8px 16px;
+    margin: 10px;
+    font-family: sans-serif; 
+}

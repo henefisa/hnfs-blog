@@ -1,0 +1,8 @@
+.Footer{
+    background: #3b3a3c;
+    height: 50px;
+}
+
+.Footer .social a{
+    font-size: 32px;
+}
