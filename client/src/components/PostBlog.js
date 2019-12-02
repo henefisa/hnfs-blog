@@ -1,6 +1,12 @@
 import React, { Component } from "react";
-
-import { Form, FormGroup, Label, Input, FormFeedback } from "reactstrap";
+import axios from "axios";
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  FormFeedback
+} from "reactstrap";
 
 class PostBlog extends Component {
   constructor(props) {
@@ -51,10 +57,10 @@ class PostBlog extends Component {
             isValid = false;
           }
         } else {
-            if(name === "description" && value.length < 10){
-                errorMessage = "Description must have more than 10 words!\n";
-                isValid = false;
-            }
+          if (name === "description" && value.length < 10) {
+            errorMessage = "Description must have more than 10 words!\n";
+            isValid = false;
+          }
         }
 
         this.setState(prevState => ({
@@ -70,22 +76,37 @@ class PostBlog extends Component {
   };
 
   handleSubmit = event => {
-    let alertMessage = "";
+    event.preventDefault();
+    const { title, description, content } = this.state;
+    const data = {
+      title: title.value,
+      description: description.value,
+      content: content.value
+    };
+    axios.post("/api/posts", data);
+    window.location.href = '/posts';
+  };
 
-    for(const message of Object.values(this.state)){
-      alertMessage += message.errorMessage;
-    }
-
-    if(alertMessage !== ""){
+  handleClick = event => {
+    const check = Object.entries(this.state).reduce((update, [key, value]) => {
+      if (value.errorMessage !== "") {
+        update[key] = {
+          ...value,
+          isValid: false
+        };
+      }
+      return update;
+    }, {});
+    if (Object.keys(check).length > 0) {
+      this.setState(check);
       event.preventDefault();
-      alert(alertMessage);
     }
-  }
+  };
 
   render() {
     return (
       <div className="post-blog">
-        <Form onSubmit={this.handleSubmit} action="/api/posts" method="POST">
+        <Form onSubmit={this.handleSubmit}>
           <FormGroup>
             <Label for="title">Title</Label>
             <Input
@@ -135,8 +156,15 @@ class PostBlog extends Component {
               value={this.state.content.value}
               onChange={this.handleOnChange}
             />
+            <FormFeedback invalid>
+              {this.state.content.errorMessage}
+            </FormFeedback>
           </FormGroup>
-          <Input type="submit" value="Post" />
+          <Input
+            type="submit"
+            value="Post"
+            onClick={this.handleClick}
+          />
         </Form>
       </div>
     );

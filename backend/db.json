@@ -1,11 +1,4 @@
 {
-  "posts": [
-    {
-      "id": 1,
-      "title": "123",
-      "description": "123123.com",
-      "content": "123"
-    }
-  ],
-  "count": 0
+    "posts": [],
+    "count": 0
 }

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import {Link} from 'react-router-dom';
+
 const AuthorInfomation = props => {
     return (
       <div className="Author-Infomation">
@@ -18,7 +20,7 @@ const About = props =>{
     return(
         <div className="About">
             <AuthorInfomation />
-            <a href="/Contact">Contact Me</a>
+            <Link to="/Contact">Contact Me</Link>
         </div>
     );
 }

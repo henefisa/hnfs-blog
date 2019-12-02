@@ -4,16 +4,15 @@ const route = express.Router();
 const db = require('../db');
 
 route.get('/posts', (req, res) => {
-    console.log(1);
+    res.json(db.get('posts'));
 });
-route.get('/', (req, res) => {
-    let arr = ['1','2'];
-    res.json(arr);
-    console.log(1);
-})
+
+route.post('/contact', (req, res) => {
+    res.sendStatus(200);
+});
+
 route.post('/posts', (req, res) => {
     let posts = db.get('posts');
-    posts.push({id: posts.value().length + 1, ...req.body}).write();
-    res.redirect('/posts');
+    posts.push({id: posts.value().length + 1, postDate: new Date().toLocaleDateString(), ...req.body}).write();
 });
 module.exports = route;
