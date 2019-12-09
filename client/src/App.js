@@ -3,7 +3,7 @@ import { BrowserRouter} from "react-router-dom";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Body from './components/Body';
+import Routes from './route/Routes';
 import "./App.css";
 
 class App extends Component {
@@ -12,7 +12,7 @@ class App extends Component {
             <div className="App">
                 <BrowserRouter>
                     <Header />
-                    <Body />
+                    <Routes />
                     <Footer />
                 </BrowserRouter>
             </div>

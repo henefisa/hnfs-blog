@@ -11,6 +11,10 @@ route.post('/contact', (req, res) => {
     res.sendStatus(200);
 });
 
+route.post('/login', (req,res) => {
+    res.sendStatus(200);
+})
+
 route.post('/posts', (req, res) => {
     let posts = db.get('posts');
     posts.push({id: posts.value().length + 1, postDate: new Date().toLocaleDateString(), ...req.body}).write();

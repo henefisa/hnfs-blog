@@ -1,138 +1,127 @@
 import React, { Component } from "react";
-
+import axios from "axios";
 import { Form, FormGroup, Label, Input, FormFeedback } from "reactstrap";
 
 const REGEX_CHECK_EMAIL = /\S+@[a-zA-Z0-9]{2,}\.\S{2,4}$/;
 const REGEX_CHECK_PHONENUMBER = /^\d{10,11}$/;
 
+const errorObj = {
+    empty: {
+        fullName: "Please enter your name!\n",
+        email: "Please enter your email!",
+        message: "Please enter your message!"
+    },
+    nonEmpty: {
+        phoneNumber: "Phone number must have 10 or 11 numbers!",
+        email: "Invalid email address!"
+    }
+};
+
 class Contact extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             fullName: {
                 value: "",
-                isValid: undefined,
-                errorMessage: "Please enter your name!\n"
+                errorMessage: ""
             },
             phoneNumber: {
                 value: "",
-                isValid: true,
                 errorMessage: ""
             },
             email: {
                 value: "",
-                isValid: undefined,
-                errorMessage: "Please enter your email!\n"
+                errorMessage: ""
             },
             message: {
                 value: "",
-                isValid: undefined,
-                errorMessage: "Please enter your message!\n"
+                errorMessage: ""
             }
         };
     }
 
-    handleOnChange = event => {
-        const { value, name } = event.target;
-        this.setState(
-            prevState => ({
-                ...prevState,
-                [name]: {
-                    ...prevState[name],
-                    value
-                }
-            }),
-            () => {
-                let errorMessage = "";
-                let isValid = true;
-                if (value === "") {
-                    if (name === "fullName") {
-                        errorMessage = "Please enter your name!\n";
-                        isValid = false;
+    checkValue = (name, value) => {
+        let errorMessage = "";
+        if (!value) {
+            errorMessage = errorObj["empty"][name] || "";
+        } else {
+            if (errorObj["nonEmpty"].hasOwnProperty(name)) {
+                switch(name){
+                    case "phoneNumber": {
+                        errorMessage = REGEX_CHECK_PHONENUMBER.test(value) ? "" : errorObj['nonEmpty'][name];
+                        break;
                     }
-                    if (name === "email") {
-                        errorMessage = "Please enter your email!\n";
-                        isValid = false;
+                    case "email": {
+                        errorMessage = REGEX_CHECK_EMAIL.test(value) ? "" : errorObj['nonEmpty'][name];
+                        break;
                     }
-                    if (name === "message") {
-                        errorMessage = "Please enter your message!\n";
-                        isValid = false;
-                    }
-                } else {
-                    const { value } = this.state[name];
-                    if (
-                        name === "phoneNumber" &&
-                        !REGEX_CHECK_PHONENUMBER.test(value)
-                    ) {
-                        errorMessage =
-                            "Phone number must have 10 or 11 numbers!\n";
-                        isValid = false;
-                    }
-                    if (name === "email" && !REGEX_CHECK_EMAIL.test(value)) {
-                        errorMessage = "Invalid email address!\n";
-                        isValid = false;
-                    }
-                }
-                this.setState(prevState => ({
-                    ...prevState,
-                    [name]: {
-                        ...prevState[name],
-                        errorMessage,
-                        isValid
-                    }
-                }));
+                    default: break;
+                };
             }
-        );
+        }
+        return errorMessage;
     };
 
-    handleSubmit = event => {
+    handleOnChange = event => {
+        const { name, value } = event.target;
+        const errorMessage = this.checkValue(name, value);
+        this.setState(prevState => ({
+            ...prevState,
+            [name]: {
+                ...prevState[name],
+                value,
+                errorMessage
+            }
+        }));
+    };
+
+    handleSubmit = async event => {
+        console.log(event);
         event.preventDefault();
-        const { title, description, content } = this.state;
+        const { fullName, phoneNumber, email, message } = this.state;
         const data = {
-            title: title.value,
-            description: description.value,
-            content: content.value
+            fullName: fullName.value,
+            phoneNumber: phoneNumber.value,
+            email: email.value,
+            message: message.value
         };
         axios.post("/api/contact", data);
-        window.location.href = "/contact";
+        //window.location.href = "/contact";
     };
 
-    handleClick = event => {
-        const check = Object.entries(this.state).reduce(
-            (update, [key, value]) => {
-                if (value.errorMessage !== "") {
-                    update[key] = {
-                        ...value,
-                        isValid: false
-                    };
-                }
-                return update;
-            },
-            {}
-        );
-        if (Object.keys(check).length > 0) {
+    handleClick = async event => {
+        let valid = true;
+        const check = Object.entries(this.state).reduce((update, [k, v]) => {
+            //[k,v] === [key, value]
+            const errorMessage = this.checkValue(k, v.value);
+            update[k] = {
+                ...v,
+                errorMessage
+            };
+            if (valid && errorMessage !== "") {
+                valid = false;
+            }
+            return update;
+        }, {});
+
+        if (!valid) {
             this.setState(check);
             event.preventDefault();
         }
     };
     render() {
+        const { fullName, phoneNumber, email, message } = this.state;
         return (
             <div className="Contact">
                 <Form onSubmit={this.handleSubmit}>
                     <FormGroup>
                         <Label for="fullName">
-                            Full Name <span className="red">*</span>
+                            Full Name <span className="red"> * </span>
                         </Label>
                         <Input
                             id="fullName"
                             name="fullName"
-                            invalid={
-                                !(
-                                    this.state.fullName.isValid === true ||
-                                    this.state.fullName.isValid === undefined
-                                )
-                            }
+                            invalid={fullName.errorMessage !== ""}
                             value={this.state.fullName.value}
                             onChange={this.handleOnChange}
                         />
@@ -141,11 +130,11 @@ class Contact extends Component {
                         </FormFeedback>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="phoneNumber">Phone Number</Label>
+                        <Label for="phoneNumber"> Phone Number </Label>
                         <Input
                             id="phoneNumber"
                             name="phoneNumber"
-                            invalid={!(this.state.phoneNumber.isValid === true)}
+                            invalid={phoneNumber.errorMessage !== ""}
                             onChange={this.handleOnChange}
                             value={this.state.phoneNumber.value}
                         />
@@ -155,17 +144,12 @@ class Contact extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Label for="email">
-                            Email <span className="red">*</span>
+                            Email <span className="red"> * </span>
                         </Label>
                         <Input
                             id="email"
                             name="email"
-                            invalid={
-                                !(
-                                    this.state.email.isValid === true ||
-                                    this.state.email.isValid === undefined
-                                )
-                            }
+                            invalid={email.errorMessage !== ""}
                             onChange={this.handleOnChange}
                             value={this.state.email.value}
                         />
@@ -175,18 +159,13 @@ class Contact extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Label for="message">
-                            Message <span className="red">*</span>
+                            Message <span className="red"> * </span>
                         </Label>
                         <Input
                             id="message"
                             name="message"
                             type="textarea"
-                            invalid={
-                                !(
-                                    this.state.message.isValid === true ||
-                                    this.state.message.isValid === undefined
-                                )
-                            }
+                            invalid={message.errorMessage !== ""}
                             onChange={this.handleOnChange}
                             value={this.state.message.value}
                         />
