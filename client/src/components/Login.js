@@ -1,27 +1,67 @@
-import React from 'react';
-import axios from 'axios';
-const handleSubmit = event =>{
-    const {username, password} = document.forms['loginForm'];
-    axios.post('/api/login', {
-        username: username.value,
-        password: password.value
-    }).then((res) => console.log("Login....!", res.status))
-    event.preventDefault();
-}
+import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-const handleClick = event => {
-    const {username, password} = document.forms['loginForm'];
-    //event.preventDefault();
-}
+export default () => {
+    const [ ,setUser] = useAuth();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [isError, setIsError] = useState(false);
+    const history = useHistory();
 
-export default () => (
-    <div className="login">
-        <form name="loginForm" onSubmit={handleSubmit}>
-            <label htmlFor="username">Username </label>
-            <input type="text" id="username" name="username"/>
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password"/>
-            <button onClick={handleClick}>Login</button>
-        </form>
-    </div>
-);
+    const onSubmit = async e => {
+        e.preventDefault();
+        const fetchData = await fetch("/authentication/login", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        });
+        const result = await fetchData.json();
+        if (result.accessToken) {
+            setUser({
+                accessToken: result.accessToken
+            });
+            history.push('/');
+        } else {
+            setIsError(true);
+        }
+    };
+
+    const onUsernameChange = e => {
+        const { value } = e.target;
+        setUsername(value);
+    };
+    const onPasswordChange = e => {
+        const { value } = e.target;
+        setPassword(value);
+    };
+
+    return (
+        <div className="login">
+            <form name="loginForm" onSubmit={onSubmit}>
+                {isError && <p>Wrong username or password!</p>}
+                <label htmlFor="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    onChange={onUsernameChange}
+                />
+                <label htmlFor="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    onChange={onPasswordChange}
+                />
+                <button>Login</button>
+            </form>
+        </div>
+    );
+};

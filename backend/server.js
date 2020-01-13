@@ -1,15 +1,25 @@
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
+require("dotenv/config");
+const express = require("express");
+const { urlencoded, json } = require("body-parser");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
-const route = require('./api/api');
+const route = require("./routes/authentication.route");
 
-const PORT = 3001;
+const server = express();
 
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-app.listen(PORT, () => {
-    console.log("Server is listening on port " + PORT);
+server.use(
+    cors({
+        origin: "http://localhost:3000",
+        credentials: true
+    })
+);
+server.use(cookieParser());
+server.use(urlencoded({ extended: true }));
+server.use(json());
+
+server.listen(process.env.PORT, () => {
+    console.log("Server is listening on port " + process.env.PORT);
 });
 
-app.use('/api/', route);
+server.use("/authentication/", route);

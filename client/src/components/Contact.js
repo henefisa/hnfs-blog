@@ -85,7 +85,7 @@ class Contact extends Component {
             email: email.value,
             message: message.value
         };
-        axios.post("/api/contact", data);
+        axios.post("/authentication/contact", data);
         //window.location.href = "/contact";
     };
 

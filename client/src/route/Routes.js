@@ -9,6 +9,7 @@ import PostBlog from "../components/PostBlog";
 import NotFoundPage from "../components/NotFoundPage";
 import Login from "../components/Login";
 import PrivateRoute from "./PrivateRoute";
+import RegisterForm from '../components/RegisterForm';
 
 const isAuthenticated = true;
 
@@ -25,6 +26,7 @@ export default () => (
                 </PrivateRoute>
             )}
             <Route path="/login" render={() => <Login />} />
+            <Route path="/register" render={() => <RegisterForm />} />
             <Route render={() => <NotFoundPage />} />
         </Switch>
     </div>

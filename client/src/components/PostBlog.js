@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Form, FormGroup, Label, Input, FormFeedback } from "reactstrap";
+import { withRouter } from 'react-router-dom';
 
 class PostBlog extends Component {
     constructor(props) {
@@ -56,14 +57,15 @@ class PostBlog extends Component {
 
     handleSubmit = event => {
         event.preventDefault();
+        const { history } = this.props;
         const { title, description, content } = this.state;
         const data = {
             title: title.value,
             description: description.value,
             content: content.value
         };
-        axios.post("/api/posts", data);
-        window.location.href = "/posts";
+        axios.post("/authentication/posts", data);
+        history.push('/');
     };
 
     handleClick = event => {
@@ -140,4 +142,4 @@ class PostBlog extends Component {
         );
     }
 }
-export default PostBlog;
+export default withRouter(PostBlog);
