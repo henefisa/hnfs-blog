@@ -4,6 +4,7 @@ const { verify } = require("jsonwebtoken");
 const uuid = require("uuid");
 
 const db = require("../db");
+
 const {
     createAccessToken,
     createRefreshToken,
@@ -53,65 +54,33 @@ route.post("/logout", (req, res) => {
     });
 });
 
-route.post("/check_username", (req, res) => {
-    const { username } = req.body;
-    try {
-        const validUsername = db
-            .get("users")
-            .find(user => user.username === username)
-            .value();
-        if (!validUsername) throw new Error("Username is already exist");
-        res.sendStatus(200);
-    } catch (error) {
-        res.json(`${error.message}`)
-    }
-});
-
-route.post("/check_email", (req, res) => {
-    const { email } = req.body;
-    try {
-        const validEmail = db
-            .get("users")
-            .find(user => user.email === email)
-            .value();
-        if (!validEmail) throw new Error("Email is already exist");
-        res.json({
-            ok: true
-        });
-    } catch (error) {
-        res.json(`${error.message}`)
-    }
-});
-
 route.post("/register", async (req, res) => {
     const { username, password, email } = req.body;
-
+    let users = db.get("users");
     try {
-        const validUsername = db
-            .get("users")
+        const validUsername = users
             .find(user => user.username === username)
             .value();
-        if (!validUsername) throw new Error("Username is already exist");
-        const validEmail = db
-            .get("users")
-            .find(user => user.email === email)
-            .value();
-        if (!validEmail) throw new Error("Email is already exist");
+        if (validUsername && validUsername.username)
+            throw new Error("Username is already exist");
+        const validEmail = users.find(user => user.email === email).value();
+        if (validEmail && validEmail.email)
+            throw new Error("Email is already exist");
 
         const id = uuid();
-        const hashPassword = hash(password, 10);
+        const hashPassword = await hash(password, 10);
 
-        db.get("users").push({
+        users.push({
             id,
             username,
             hashPassword,
             email
-        });
+        }).write();
         res.json({
-            success: true
+            ok: true
         });
     } catch (error) {
-        res.json(`${error.message}`);
+        res.json({ errorMessage: `${error.message}` });
     }
 });
 
@@ -124,6 +93,9 @@ route.post("/posts", (req, res) => {
             ...req.body
         })
         .write();
+    res.json({
+        ok: true
+    });
 });
 
 route.post("/refresh_token", (req, res) => {

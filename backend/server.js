@@ -23,3 +23,4 @@ server.listen(process.env.PORT, () => {
 });
 
 server.use("/authentication/", route);
+server.use("/protected/", route);

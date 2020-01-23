@@ -5,7 +5,7 @@ const User = props => {
     const [user] = useContext(AuthContext);
     return (
         <div>
-            <h3>Hello {props.username}</h3>
+            <h3>Hello {props.username}</h3>  
         </div>
     );
 };
