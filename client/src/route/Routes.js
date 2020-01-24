@@ -1,13 +1,14 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
 
-import Main from "../components/Main";
-import Blog from "../components/Blog";
-import About from "../components/About";
+import Main from "../components/pages/Main";
+import Blog from "../components/pages/Blog";
+import About from "../components/pages/About";
 import Contact from "../components/form/Contact";
 import PostBlog from "../components/form/PostBlog";
-import NotFoundPage from "../components/NotFoundPage";
+import NotFoundPage from "../components/pages/NotFoundPage";
 import PrivateRoute from "./PrivateRoute";
+import AccountManagement from "../components/pages/AccountManagement";
 
 export default () => (
     <div>
@@ -16,8 +17,11 @@ export default () => (
             <Route path="/blog" render={() => <Blog />} />
             <Route path="/about" render={() => <About />} />
             <Route path="/contact" render={props => <Contact {...props} />} />
-            <PrivateRoute path="/posts" >
+            <PrivateRoute path="/posts">
                 <PostBlog />
+            </PrivateRoute>
+            <PrivateRoute path="/account">
+                <AccountManagement />
             </PrivateRoute>
             <Route render={() => <NotFoundPage />} />
         </Switch>

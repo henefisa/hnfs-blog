@@ -4,6 +4,7 @@ const { verify } = require("jsonwebtoken");
 const uuid = require("uuid");
 
 const db = require("../db");
+const { isAuth } = require("../isAuth");
 
 const {
     createAccessToken,
@@ -23,7 +24,6 @@ route.post("/contact", (req, res) => {
 
 route.post("/login", async (req, res) => {
     const { username, password } = req.body;
-
     try {
         const user = db
             .get("users")
@@ -56,6 +56,7 @@ route.post("/logout", (req, res) => {
 
 route.post("/register", async (req, res) => {
     const { username, password, email } = req.body;
+    console.log(username, password);
     let users = db.get("users");
     try {
         const validUsername = users
@@ -69,13 +70,14 @@ route.post("/register", async (req, res) => {
 
         const id = uuid();
         const hashPassword = await hash(password, 10);
-
-        users.push({
-            id,
-            username,
-            hashPassword,
-            email
-        }).write();
+        users
+            .push({
+                id,
+                username,
+                password: hashPassword,
+                email
+            })
+            .write();
         res.json({
             ok: true
         });
@@ -96,6 +98,36 @@ route.post("/posts", (req, res) => {
     res.json({
         ok: true
     });
+});
+
+route.put("/change_password", async (req, res) => {
+    try {
+        const userId = isAuth(req);
+        const user = db
+            .get("users")
+            .find(user => user.id === userId.userId)
+            .value();
+        if (userId !== null) {
+            const { oldPassword, newPassword, confirmNewPassword } = req.body;
+            const validOldPassword = await compare(oldPassword, user.password);
+            if (!validOldPassword) throw new Error("Wrong old password");
+            if (newPassword !== confirmNewPassword)
+                throw new Error("Confirm password must match new password");
+            const hashedNewPassword = await hash(newPassword, 10);
+            db.get("users")
+                .chain()
+                .find(user)
+                .assign({ password: hashedNewPassword })
+                .write();
+            res.json({
+                ok: true
+            });
+        }
+    } catch (error) {
+        res.json({
+            errorMessage: `${error.message}`
+        });
+    }
 });
 
 route.post("/refresh_token", (req, res) => {
@@ -125,7 +157,7 @@ route.post("/refresh_token", (req, res) => {
         .assign({ refreshToken })
         .write();
     sendRefreshToken(res, refreshToken);
-    return res.send({ accessToken });
+    return res.send({ accessToken, username: user.username });
 });
 
 module.exports = route;

@@ -3,7 +3,7 @@ import React from "react";
 import { Container, Button } from "reactstrap";
 import { Link } from "react-router-dom";
 
-import "../styles/Main.scss";
+import "../../styles/Main.scss";
 
 const Main = props => {
     return (

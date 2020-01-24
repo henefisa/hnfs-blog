@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import axios from "axios";
 
 const BlogContent = props => {
   return (
@@ -26,11 +25,7 @@ class Blog extends Component {
   }
 
   componentDidMount() {
-    axios.get("/api/posts").then(res => {
-      this.setState({
-        blogContent: res.data
-      });
-    });
+
   }
 
   render() {

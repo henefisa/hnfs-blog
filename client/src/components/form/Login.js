@@ -38,7 +38,8 @@ export default props => {
                 if (props.toggle) props.toggle();
                 setTimeout(() => {
                     setUser({
-                        accessToken: result.accessToken
+                        accessToken: result.accessToken,
+                        username: result.username
                     });
                 }, 500);
             } else {

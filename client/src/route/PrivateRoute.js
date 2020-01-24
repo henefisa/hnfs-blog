@@ -1,16 +1,15 @@
-import React, { useContext } from "react";
-import { Route, Redirect } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import React from "react";
+import { Route } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import NotFoundPage from "../components/pages/NotFoundPage";
 
 const PrivateRoute = ({ children, ...rest }) => {
-    const [user] = useContext(AuthContext);
-    
+    const [user] = useAuth();
+
     return (
         <Route
             {...rest}
-            render={() =>
-                user.accessToken ? children : <Redirect to="/login" />
-            }
+            render={() => (user.accessToken ? children : <NotFoundPage />)}
         />
     );
 };

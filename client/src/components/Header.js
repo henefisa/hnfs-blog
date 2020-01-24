@@ -8,24 +8,22 @@ import {
     NavItem,
     NavLink,
     Container,
-    Dropdown,
+    UncontrolledDropdown,
     DropdownToggle,
     DropdownMenu,
     DropdownItem
 } from "reactstrap";
-import { NavLink as RRNavLink } from "react-router-dom";
+import { NavLink as RRNavLink, Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import withModals from "../HOCs/withModals";
 import Login from "../components/form/Login";
 import RegisterForm from "../components/form/RegisterForm";
 
-const LoginModal = withModals({ title: "Login"})(Login);
-const RegisterModal = withModals({ title: "Register"})(
-    RegisterForm
-);
+const LoginModal = withModals({ title: "Login" })(Login);
+const RegisterModal = withModals({ title: "Register" })(RegisterForm);
 
-const AuthorizedHeader = ({ logoutCallback }) => {
+const AuthorizedHeader = ({ logoutCallback, username }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -65,23 +63,26 @@ const AuthorizedHeader = ({ logoutCallback }) => {
                                 Post
                             </NavLink>
                         </NavItem>
-                        <NavItem>
-                            <Dropdown
-                                isOpen={dropdownOpen}
-                                toggle={toggleDropdown}
-                                nav
-                                inNavbar
-                            >
-                                <DropdownToggle nav caret>Dropdown</DropdownToggle>
-                                <DropdownMenu>
-                                    <DropdownItem>Account info</DropdownItem>
-                                    <DropdownItem>Change password</DropdownItem>
-                                    <DropdownItem onClick={logoutCallback}>
-                                        Logout
-                                    </DropdownItem>
-                                </DropdownMenu>
-                            </Dropdown>
-                        </NavItem>
+                        <UncontrolledDropdown
+                            isOpen={dropdownOpen}
+                            toggle={toggleDropdown}
+                            nav
+                            inNavbar
+                        >
+                            <DropdownToggle nav caret>
+                                Hello, {username}
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                <DropdownItem>
+                                    <Link to="/account">
+                                        Account management
+                                    </Link>
+                                </DropdownItem>
+                                <DropdownItem onClick={logoutCallback}>
+                                    Logout
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </UncontrolledDropdown>
                     </Nav>
                 </Collapse>
             </Container>
@@ -137,7 +138,10 @@ const UnauthorizedHeader = props => {
 const Header = ({ logoutCallback }) => {
     const [user] = useAuth();
     return user.accessToken ? (
-        <AuthorizedHeader logoutCallback={logoutCallback} />
+        <AuthorizedHeader
+            logoutCallback={logoutCallback}
+            username={user.username}
+        />
     ) : (
         <UnauthorizedHeader />
     );
