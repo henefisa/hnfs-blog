@@ -16,7 +16,7 @@ const withModals = props => WrappedComponent => {
             return (
                 <div>
                     <NavLink onClick={this.toggle} style={{cursor: "pointer"}}>{props.title}</NavLink>
-                    <Modal isOpen={modal} toggle={this.toggle}>
+                    <Modal isOpen={modal} >
                         <ModalHeader toggle={this.toggle}>
                             {props.title}
                         </ModalHeader>

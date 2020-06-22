@@ -1,16 +1,20 @@
 import React, { useState } from "react";
-import { Form, Input, Alert } from "reactstrap";
+import { Form, Input, Alert, Container } from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-import Field from '../common/Field';
+import Field from "../common/Field";
 
 const REGEX_CHECK_PHONENUMBER = /^\d{10,11}$/;
 
 const fields = {
     sections: [
         [
-            { type: "text", name: "fullName", title: "Full Name" },
+            {
+                type: "text",
+                name: "fullName",
+                title: "Full Name"
+            },
             { type: "text", name: "phoneNumber", title: "Phone Number" },
             { type: "text", name: "email", title: "Email" }
         ],
@@ -18,9 +22,10 @@ const fields = {
     ]
 };
 
-const Contact = () => {
+const Contact = props => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [isError, setIsError] = useState(false);
+    console.log(props);
     const formik = useFormik({
         initialValues: {
             fullName: "",
@@ -31,7 +36,7 @@ const Contact = () => {
         validationSchema: Yup.object({
             fullName: Yup.string().required("Full name is required"),
             phoneNumber: Yup.string().matches(REGEX_CHECK_PHONENUMBER, {
-                message: "Invalid phonenumber"
+                message: "Invalid phone number"
             }),
             email: Yup.string()
                 .email("Invalid email address")
@@ -58,22 +63,24 @@ const Contact = () => {
         }
     });
     return (
-        <Form onSubmit={formik.handleSubmit}>
-            {isSuccess && <Alert color="success">Sent</Alert>}
-            {isError && <Alert color="danger">Failed</Alert>}
-            {fields.sections.map(section =>
-                section.map((field, fieldIndex) => (
-                    <Field
-                        key={fieldIndex}
-                        type={field.type}
-                        name={field.name}
-                        title={field.title}
-                        formik={formik}
-                    />
-                ))
-            )}
-            <Input type="submit" value="Send" />
-        </Form>
+        <Container>
+            <Form onSubmit={formik.handleSubmit}>
+                {isSuccess && <Alert color="success">Sent</Alert>}
+                {isError && <Alert color="danger">Failed</Alert>}
+                {fields.sections.map(section =>
+                    section.map((field, fieldIndex) => (
+                        <Field
+                            key={fieldIndex}
+                            type={field.type}
+                            name={field.name}
+                            title={field.title}
+                            formik={formik}
+                        />
+                    ))
+                )}
+                <Input type="submit" value="Send" />
+            </Form>
+        </Container>
     );
 };
 

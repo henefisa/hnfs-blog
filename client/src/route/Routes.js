@@ -17,12 +17,9 @@ export default () => (
             <Route path="/blog" render={() => <Blog />} />
             <Route path="/about" render={() => <About />} />
             <Route path="/contact" render={props => <Contact {...props} />} />
-            <PrivateRoute path="/posts">
-                <PostBlog />
-            </PrivateRoute>
-            <PrivateRoute path="/account">
-                <AccountManagement />
-            </PrivateRoute>
+            <PrivateRoute path="/posts/:postId" component={PostBlog} />
+            <PrivateRoute path="/posts" component={PostBlog} />
+            <PrivateRoute path="/account" component={AccountManagement} />
             <Route render={() => <NotFoundPage />} />
         </Switch>
     </div>

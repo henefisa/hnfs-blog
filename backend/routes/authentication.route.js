@@ -100,6 +100,18 @@ route.post("/posts", (req, res) => {
     });
 });
 
+route.get("/posts/:postId", (req, res) => {
+    const postId = parseInt(req.params.postId);
+    const posts = db.get("posts");
+    const post = posts.find(post => post.id === postId).value();
+    if (post) {
+        res.json({
+            ok: true,
+            data: post
+        });
+    }
+});
+
 route.put("/change_password", async (req, res) => {
     try {
         const userId = isAuth(req);

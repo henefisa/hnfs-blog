@@ -35,13 +35,10 @@ export default props => {
             });
             const result = await fetchData.json();
             if (result.accessToken) {
-                if (props.toggle) props.toggle();
-                setTimeout(() => {
-                    setUser({
-                        accessToken: result.accessToken,
-                        username: result.username
-                    });
-                }, 500);
+                setUser({
+                    accessToken: result.accessToken,
+                    username: result.username
+                });
             } else {
                 setIsError(true);
             }

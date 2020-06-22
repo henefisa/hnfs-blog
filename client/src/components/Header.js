@@ -74,7 +74,10 @@ const AuthorizedHeader = ({ logoutCallback, username }) => {
                             </DropdownToggle>
                             <DropdownMenu>
                                 <DropdownItem>
-                                    <Link to="/account">
+                                    <Link
+                                        to="/account"
+                                        style={{ textDecoration: "none" }}
+                                    >
                                         Account management
                                     </Link>
                                 </DropdownItem>
